@@ -1,6 +1,9 @@
 /* global TrelloPowerUp */
 var Promise = TrelloPowerUp.Promise;
 
+// Prefijo del identificador: "I-" da I-1, I-2, I-3...
+var PREFIX = 'I-';
+
 var ICON = window.location.origin + window.location.pathname.replace(/[^/]*$/, '') + 'icon.svg';
 
 // Cola para evitar que varias tarjetas lean el mismo contador a la vez
@@ -46,13 +49,13 @@ function renumberAll(t) {
 TrelloPowerUp.initialize({
   'card-badges': function (t) {
     return assignNumber(t).then(function (n) {
-      return [{ text: '#' + n, color: 'blue' }];
+      return [{ text: PREFIX + n }];
     });
   },
 
   'card-detail-badges': function (t) {
     return assignNumber(t).then(function (n) {
-      return [{ title: 'Número', text: '#' + n, color: 'blue' }];
+      return [{ title: 'Número', text: PREFIX + n }];
     });
   },
 
