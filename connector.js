@@ -46,17 +46,35 @@ function renumberAll(t) {
   });
 }
 
+function openCopy(t) {
+  return t.popup({
+    title: 'Copiar referencia',
+    url: './copy.html',
+    height: 130
+  });
+}
+
 TrelloPowerUp.initialize({
   'card-badges': function (t) {
     return assignNumber(t).then(function (n) {
-      return [{ text: PREFIX + n }];
+      return [{ text: PREFIX + n, callback: openCopy }];
     });
   },
 
   'card-detail-badges': function (t) {
     return assignNumber(t).then(function (n) {
-      return [{ title: 'Número', text: PREFIX + n }];
+      return [{ title: 'Número', text: PREFIX + n, callback: openCopy }];
     });
+  },
+
+  'card-buttons': function () {
+    return [
+      {
+        icon: ICON,
+        text: 'Copiar referencia',
+        callback: openCopy
+      }
+    ];
   },
 
   'board-buttons': function () {
