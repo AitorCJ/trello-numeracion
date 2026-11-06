@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://p.trellocdn.com/power-up.min.css" />
+    <script src="https://p.trellocdn.com/power-up.min.js"></script>
+    <style>
+      #txt { width: 100%; height: 84px; box-sizing: border-box; margin-bottom: 8px; resize: none; }
+      #msg { margin-left: 8px; color: #61bd4f; font-weight: bold; }
+    </style>
+  </head>
+  <body>
+    <textarea id="txt" readonly></textarea>
+    <button id="copy" class="mod-primary">Copiar</button><span id="msg"></span>
+
+    <script>
+      // Debe coincidir con PREFIX de connector.js
+      var PREFIX = 'I-';
+      var SEPARATOR = ' | ';
+
+      var t = TrelloPowerUp.iframe();
+      var txt = document.getElementById('txt');
+      var msg = document.getElementById('msg');
+
+      t.render(function () {
+        return TrelloPowerUp.Promise.all([
+          t.get('card', 'shared', 'seq'),
+          t.card('name', 'shortLink')
+        ]).then(function (r) {
+          var seq = r[0];
+          var card = r[1];
+          var id = seq ? PREFIX + seq : '(sin número)';
+          var shortUrl = 'https://trello.com/c/' + card.shortLink;
+          txt.value = id + SEPARATOR + card.name + SEPARATOR + shortUrl;
+          t.sizeTo(document.body);
+        });
+      });
+
+      function done() {
+        msg.textContent = 'Copiado';
+        setTimeout(function () { t.closePopup(); }, 700);
+      }
+
+      function fallback() {
+        txt.select();
+        try {
+          if (document.execCommand('copy')) { done(); return; }
+        } catch (e) {}
+        msg.style.color = '#eb5a46';
+        msg.textContent = 'Selecciona y pulsa Ctrl+C';
+      }
+
+      document.getElementById('copy').addEventListener('click', function () {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt.value).then(done, fallback);
+        } else {
+          fallback();
+        }
+      });
+    </script>
+  </body>
+</html>
